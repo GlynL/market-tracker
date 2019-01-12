@@ -1,54 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Form from "./Form";
+import Chart from "./Chart";
 import { API_KEY } from "../variables";
-import { Bar } from "react-chartjs-2";
 
 // top coins https://coinmarketcap.com/all/views/all/
 
-const Coins = ({ coins }) => {
-  //  add chart js
-  console.log(coins);
-  if (coins.length === 0) return <div>loading...</div>;
-  return (
-    <Bar
-      // width={100}
-      // height={300}
-      data={{
-        labels: coins.map(coin => coin.name),
-        datasets: [
-          {
-            label: "Current Value (USD)",
-            data: coins.map(coin => coin.rate),
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)"
-            ],
-            borderColor: [
-              "rgba(255,99,132,1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)"
-            ],
-            borderWidth: 1
-          }
-        ]
-      }}
-    />
-  );
-
-  return coins.map(coin => (
-    <li key={coin.name}>
-      {coin.name}
-      {coin.rate}
-      {coin.to}
-    </li>
-  ));
-};
 const dummyCoins = [
   { name: "BTC", to: "USD", rate: "50.99000000" },
   { name: "XRP", to: "USD", rate: "0.33185418" },
@@ -89,7 +45,6 @@ const App = () => {
     //       rate: values["5. Exchange Rate"]
     //     };
     //   });
-    // console.log(coins);
     setCoins(dummyCoins);
     // });
   }, []);
@@ -103,7 +58,7 @@ const App = () => {
       <h1>Market Tracker</h1>
       {errorMessage && <p>{errorMessage}</p>}
       <Form onSubmit={onSubmit} />
-      <Coins coins={coins} />
+      <Chart coins={coins} />
     </div>
   );
 };
