@@ -5,16 +5,8 @@ import { API_KEY } from "../variables";
 
 // top coins https://coinmarketcap.com/all/views/all/
 
-const dummyCoins = [
-  { name: "BTC", to: "USD", rate: "50.99000000" },
-  { name: "XRP", to: "USD", rate: "0.33185418" },
-  { name: "ETH", to: "USD", rate: "128.07000000" },
-  { name: "BCH", to: "USD", rate: "135.93000000" },
-  { name: "EOS", to: "USD", rate: "2.46000000" }
-];
-
 const App = () => {
-  const topCoins = ["btc", "xrp", "eth", "bch", "eos"];
+  const topCoins = ["xrp", "eth", "bch", "eos"];
   const [errorMessage, setErrorMessage] = useState(null);
   const [coins, setCoins] = useState([]);
 
@@ -22,31 +14,28 @@ const App = () => {
     try {
       const promises = coins.map(coin =>
         fetch(
-          `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${coin}&to_currency=USD&apikey=${API_KEY}`
+          `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_MONTHLY&symbol=${coin}&market=USD&apikey=${API_KEY}`
         )
       );
       const responses = await Promise.all(promises);
       const preJSON = responses.map(response => response.json());
       const data = await Promise.all(preJSON);
+      data.forEach(coin => {
+        if (coin.Note)
+          throw new Error(
+            "Currently over API limit. Please wait a minute and refresh."
+          );
+      });
       return data;
     } catch (err) {
-      console.log("err");
-      setErrorMessage("Error fetching data. Please try again.");
+      return Promise.reject(err);
     }
   }
 
   useEffect(() => {
-    // fetchValues(topCoins).then(data => {
-    //   const coins = data.map(coin => {
-    //     const { ["Realtime Currency Exchange Rate"]: values } = coin;
-    //     return {
-    //       name: values["1. From_Currency Code"],
-    //       to: values["3. To_Currency Code"],
-    //       rate: values["5. Exchange Rate"]
-    //     };
-    //   });
-    setCoins(dummyCoins);
-    // });
+    fetchValues(topCoins)
+      .then(data => setCoins(data))
+      .catch(err => setErrorMessage(err.message));
   }, []);
 
   const onSubmit = () => {

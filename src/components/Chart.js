@@ -1,41 +1,63 @@
 import React from "react";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 const Chart = ({ coins }) => {
-  //  add chart js
   if (coins.length === 0) return <div>loading...</div>;
+
+  let fondledCoins = coins.map(coin => {
+    const {
+      "Time Series (Digital Currency Monthly)": data,
+      "Meta Data": meta
+    } = coin;
+    return {
+      data,
+      meta
+    };
+  });
+
+  // extract date & value from data - reverse order (oldest -> newest)
+  fondledCoins.forEach(coin => {
+    const fondledData = Object.entries(coin.data)
+      .reverse()
+      .map(day => {
+        return {
+          day: day[0],
+          close: day[1]["4a. close (USD)"]
+        };
+      });
+    coin.data = fondledData;
+  });
+
+  const labels = fondledCoins[0].data.map(day => day.day);
+  const datasets = fondledCoins.map(coin => ({
+    label: coin.meta["3. Digital Currency Name"],
+    data: coin.data.map(day => day.close),
+    fill: false
+  }));
+
   return (
-    <Bar
-      // width={100}
-      // height={300}
+    <Line
       data={{
-        labels: coins.map(coin => coin.name),
-        datasets: [
-          {
-            label: "Current Value (USD)",
-            data: coins.map(coin => coin.rate),
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)"
-            ],
-            borderColor: [
-              "rgba(255,99,132,1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)"
-            ],
-            borderWidth: 1
-          }
-        ]
+        labels,
+        datasets
       }}
-      height={200}
       options={{
-        maintainAspectRatio: false
+        title: { display: true, text: "Daily Cryptocurrency Prices" },
+        tooltips: {
+          mode: "label"
+        },
+        scales: {
+          xAxes: [
+            {
+              scaleLabel: { display: true, labelString: "Date" }
+            }
+          ],
+          yAxes: [
+            {
+              scaleLabel: { display: true, labelString: "Closing Value (USD)" }
+            }
+          ]
+        }
       }}
     />
   );
