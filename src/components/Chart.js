@@ -29,11 +29,32 @@ const Chart = ({ coins }) => {
   });
 
   const labels = fondledCoins[0].data.map(day => day.day);
-  const datasets = fondledCoins.map(coin => ({
-    label: coin.meta["3. Digital Currency Name"],
-    data: coin.data.map(day => day.close),
-    fill: false
-  }));
+
+  const datasets = fondledCoins.map((coin, i) => {
+    // Convert daily closing value to growth from previous day - day.close
+    const data = coin.data.map((day, i) => {
+      if (i === 0) return 0;
+      return day.close / coin.data[i - 1].close;
+    });
+
+    function getRandomColor() {
+      var letters = "0123456789ABCDEF";
+      var color = "#";
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    const borderColor = getRandomColor();
+
+    return {
+      label: coin.meta["3. Digital Currency Name"],
+      data,
+      fill: false,
+      borderColor
+    };
+  });
 
   return (
     <Line
@@ -54,7 +75,7 @@ const Chart = ({ coins }) => {
           ],
           yAxes: [
             {
-              scaleLabel: { display: true, labelString: "Closing Value (USD)" }
+              scaleLabel: { display: true, labelString: "Daily Growth" }
             }
           ]
         }
