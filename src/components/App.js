@@ -26,16 +26,16 @@ const App = () => {
             "Currently over API limit. Please wait a minute and refresh."
           );
       });
-      return data;
+      setCoins(data);
     } catch (err) {
-      return Promise.reject(err);
+      setErrorMessage(err.message);
     }
   }
 
   useEffect(() => {
-    fetchValues(topCoins)
-      .then(data => setCoins(data))
-      .catch(err => setErrorMessage(err.message));
+    // current bad practice  https://github.com/facebook/react/issues/14326#issuecomment-441680293
+    // later refactor - suspense
+    fetchValues(topCoins);
   }, []);
 
   const onSubmit = () => {
