@@ -34,8 +34,13 @@ const Chart = ({ coins }) => {
     // Convert daily closing value to growth from previous day - day.close
     const data = coin.data.map((day, i) => {
       if (i === 0) return 0;
-      return day.close / coin.data[i - 1].close;
+      const change = getChange(day.close, coin.data[i - 1].close);
+      return change;
     });
+
+    function getChange(latest, old) {
+      return ((latest - old) / old) * 100;
+    }
 
     function getRandomColor() {
       var letters = "0123456789ABCDEF";
@@ -63,7 +68,7 @@ const Chart = ({ coins }) => {
         datasets
       }}
       options={{
-        title: { display: true, text: "Daily Cryptocurrency Prices" },
+        title: { display: true, text: "Monthly Cryptocurrency Price Change" },
         tooltips: {
           mode: "label"
         },
@@ -75,7 +80,7 @@ const Chart = ({ coins }) => {
           ],
           yAxes: [
             {
-              scaleLabel: { display: true, labelString: "Daily Growth" }
+              scaleLabel: { display: true, labelString: "Change (%)" }
             }
           ]
         }

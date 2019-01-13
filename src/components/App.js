@@ -6,7 +6,7 @@ import { API_KEY } from "../variables";
 // top coins https://coinmarketcap.com/all/views/all/
 
 const App = () => {
-  const topCoins = ["xrp", "eth", "bch", "eos"];
+  const topCoins = ["btc", "xrp", "eth", "bch", "eos"];
   const [errorMessage, setErrorMessage] = useState(null);
   const [coins, setCoins] = useState([]);
 
